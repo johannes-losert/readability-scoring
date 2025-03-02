@@ -897,6 +897,8 @@ Readability.prototype = {
         node.readability.contentScore += 5;
         break;
 
+      case "UL":
+      case "LI":
       case "PRE":
       case "TD":
       case "BLOCKQUOTE":
@@ -905,11 +907,9 @@ Readability.prototype = {
 
       case "ADDRESS":
       case "OL":
-      case "UL":
       case "DL":
       case "DD":
       case "DT":
-      case "LI":
       case "FORM":
         node.readability.contentScore -= 3;
         break;
@@ -1219,11 +1219,7 @@ Readability.prototype = {
           return;
         }
 
-        // If this paragraph is less than 25 characters, don't even count it.
         var innerText = this._getInnerText(elementToScore);
-        if (innerText.length < 25) {
-          return;
-        }
 
         // Exclude nodes with no ancestor.
         var ancestors = this._getNodeAncestors(elementToScore, 5);
@@ -1236,13 +1232,13 @@ Readability.prototype = {
         // Add a point for the paragraph itself as a base.
         contentScore += 1;
 
-        // Add points for any commas within this paragraph.
         contentScore += innerText.split(this.REGEXPS.commas).length;
-
-        // For every 100 characters in this paragraph, add another point. Up to 3 points.
+        
+        // SELECT FOR ADOPTION YEARS 
+        contentScore += innerText.split('^(20(1[5-9]|2\d|3[0-5]))').length * 3;
+        
         contentScore += Math.min(Math.floor(innerText.length / 100), 3);
 
-        // Initialize and score ancestors.
         this._forEachNode(ancestors, function (ancestor, level) {
           if (
             !ancestor.tagName ||
@@ -2783,3 +2779,6 @@ if (typeof module === "object") {
   /* global module */
   module.exports = Readability;
 }
+
+
+
